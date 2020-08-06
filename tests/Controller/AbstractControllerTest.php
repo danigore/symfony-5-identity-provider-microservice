@@ -100,6 +100,22 @@ abstract class AbstractControllerTest extends WebTestCase
     }
 
     /**
+     * @return string|null
+     */
+    protected function getToken(): ?string
+    {
+        if (empty(json_decode($this->client->getResponse()->getContent(), true))) {
+            return null;
+        }
+
+        if (empty($token = json_decode($this->client->getResponse()->getContent(), true)["token"])) {
+            return null;
+        }
+
+        return $token;
+    }
+
+    /**
      * @return void
      */
     public function tearDown(): void
