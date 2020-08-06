@@ -8,19 +8,19 @@ lexik_jwt_authentication:
     token_extractors:
         # look for a token as Authorization Header
         authorization_header:
-            enabled: true
-            prefix: Bearer
-            name: Authorization
+            enabled: false
+            #prefix: Bearer
+            #name: Authorization
 
         # check token in a cookie
-        #cookie:
-        #    enabled: true
-        #    name: BEARER
+        cookie:
+            enabled: true
+            name: BEARER
 
     # Automatically generating cookies:
     #https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/1-configuration-reference.md#automatically-generating-cookies
-    #set_cookies:
-    #    BEARER: ~
+    set_cookies:
+        BEARER: ~
             #lifetime: null #defaults to token ttl
             #samesite: lax
             #path: /
