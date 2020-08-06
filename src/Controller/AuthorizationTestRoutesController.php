@@ -12,7 +12,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
  * Class AuthorizationTestRoutesController
  * @package App\Controller
  * @Route("/authorization-tests")
- * @IsGranted("ROLE_USER")
  */
 class AuthorizationTestRoutesController
 {
