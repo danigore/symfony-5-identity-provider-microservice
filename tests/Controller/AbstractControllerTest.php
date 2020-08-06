@@ -10,8 +10,9 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Input\StringInput;
 
 /**
  * Class AbstractControllerTest
@@ -35,6 +36,11 @@ abstract class AbstractControllerTest extends WebTestCase
     protected KernelBrowser $client;
 
     /**
+     * @var ConsoleOutput $output
+     */
+    protected ConsoleOutput $output;
+
+    /**
      * @return void
      */
     public function setUp(): void
@@ -51,6 +57,7 @@ abstract class AbstractControllerTest extends WebTestCase
         $this->client = static::createClient();
         $this->manager = self::$kernel->getContainer()->get('doctrine.orm.entity_manager');
         $this->executor = new ORMExecutor($this->manager, new ORMPurger());
+        $this->output = new ConsoleOutput();
 
         // Run the schema update tool using our entity metadata
         $schemaTool = new SchemaTool($this->manager);
