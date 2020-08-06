@@ -16,3 +16,16 @@
 3; And finally test it ...
 ---
 `$ php bin/phpunit`
+
+
+
+> #### Additionally
+>
+> **Originally enabled the secure http-only cookie token extractor** (to provide security against XSS attacks):
+> [LexikJWTAuthenticationBundle/1-configuration-reference.md#automatically-generating-cookies](https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/1-configuration-reference.md#automatically-generating-cookies)
+>
+> *... but the shift back to the authorization header type extractor is easy to, just update the lexik_jwt_authentication config file by this commit:*
+> [commit/Extended lexik_jwt_authentication configuration](https://github.com/danigore/symfony-5-microservice-auth/commit/6a952b83af99340c7335ef0cc276c5a18058272f)
+>
+> ***More info about why is the combination of JWT and XSS so relevant here***:
+> [Christian Kolb:Improve security when working with JWT and Symfony](https://blog.liplex.de/improve-security-when-working-with-jwt-and-symfony/)
