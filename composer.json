@@ -9,6 +9,7 @@
         "doctrine/doctrine-bundle": "^2.1",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.7",
+        "gesdinet/jwt-refresh-token-bundle": "^0.9.1",
         "lexik/jwt-authentication-bundle": "^2.8",
         "sensio/framework-extra-bundle": "^5.5",
         "symfony/console": "5.1.*",
