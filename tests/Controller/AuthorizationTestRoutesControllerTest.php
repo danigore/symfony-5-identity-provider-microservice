@@ -100,8 +100,42 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
             $this->output->writeln("<error>lexik_jwt_authentication.token_extractors.authorization_header enabled</error>");
             $this->output->writeln("<error>This type of autentication is don't provide security against XSS attacks!</error>");
             $this->output->writeln("<error>more info: https://blog.liplex.de/improve-security-when-working-with-jwt-and-symfony/</error>");
+            
+            // Save the refresh token
+            $this->output->writeln("<info>Save the refresh token ...</info>");
+            $refreshToken = $this->getToken('refresh_token');
+            $this->assertEquals(true, !empty($refreshToken) && is_string($refreshToken));
+            
             $this->client->request('GET', '/authorization-tests/admin-role', [], [], parent::getAuthHeaders($token));
         }
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+
+
+        $this->output->writeln("\n<info>Waiting for token expiration (sleep: 6 seconds -> (the token expiration time is 5 seconds in test environment.))</info>");
+        sleep(6);
+
+        // Refresh the token
+        $this->output->writeln("\n<info>Refresh the JWT token</info>");
+        if (!$token) {
+            // ...
+            $this->output->writeln("<error>Refresh token supported only with authorization header type token extractor ...</error>");
+        } else {
+            $this->client->request('POST', '/token/refresh', [], [], [
+                'CONTENT_TYPE' => 'application/json'
+            ], json_encode(['refresh_token' => $refreshToken]));
+
+            $newToken = $this->getToken();
+            $this->assertEquals(true, !empty($newToken) && is_string($newToken));
+            $this->assertEquals(false, $token == $newToken);
+
+            $this->output->writeln("\n<info>Invalid request with the old token ...</info>");
+            $this->output->writeln("<info>Expected status code:401, with Expired JWT Token message (without AccessDeniedException!)</info>");
+            $this->client->request('GET', '/authorization-tests/admin-role', [], [], parent::getAuthHeaders($token));
+            $this->assertEquals(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+
+            $this->output->writeln("\n<info>Valid request with the refreshed token</info>");
+            $this->client->request('GET', '/authorization-tests/admin-role', [], [], parent::getAuthHeaders($newToken));
+            $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        }
     }
 }
