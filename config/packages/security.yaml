@@ -28,6 +28,12 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+        #put it before all your other firewall API entries
+        refresh:
+            pattern: ^/token/refresh
+            stateless: true
+            security: false #Symfony 6 design -> anonymous: true not valid anymore!
+
         api:
             #http_basic: ~
             stateless: true
@@ -53,7 +59,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # allow unauthenticated users to access the login form
+        # allow unauthenticated users to access the login and token refresh routes
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/token/refresh, roles: PUBLIC_ACCESS }
         # but require authentication for all other admin routes
         - { path: ^/, roles: ROLE_USER }
