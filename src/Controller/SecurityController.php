@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\DependencyInjection\LexikJWTAuthenticationDependencyInjectionService;
+use App\Service\DependencyInjection\JWTCookieExtractorDependencyInjectionService;
 use App\Exception\LogoutNotSupportedWithAuthorizationHeaderTypeTokenExtractorException;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,12 +18,12 @@ class SecurityController
 {
     /**
      * @Route("/logout", name="app_logout", methods={"GET"})
-     * @param LexikJWTAuthenticationDependencyInjectionService $service
+     * @param JWTCookieExtractorDependencyInjectionService $service
      * @return JsonResponse
      * @throws ParseException
      * @throws LogoutNotSupportedWithAuthorizationHeaderTypeTokenExtractorException
      */
-    public function logout(LexikJWTAuthenticationDependencyInjectionService $service): JsonResponse
+    public function logout(JWTCookieExtractorDependencyInjectionService $service): JsonResponse
     {
         if ($service->isAuthorizationHeaderExtractorEnabled()) {
             throw new LogoutNotSupportedWithAuthorizationHeaderTypeTokenExtractorException('Backend logout not supported!');
