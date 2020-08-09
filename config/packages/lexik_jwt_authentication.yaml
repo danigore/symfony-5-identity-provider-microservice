@@ -9,8 +9,8 @@ lexik_jwt_authentication:
         # look for a token as Authorization Header
         authorization_header:
             enabled: false
-            prefix: Bearer
-            name: Authorization
+            #prefix: Bearer
+            #name: Authorization
 
         # check token in a cookie
         cookie:
