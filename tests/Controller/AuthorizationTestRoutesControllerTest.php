@@ -95,14 +95,22 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
 
         if (!$token = $this->getJsonResponseContentValue('token')) {
             $this->output->writeln("<info>Secure httponly cookie token extractor is enabled ... Great!</info>");
+            $this->output->writeln("\n<info>In secure mode the Refresh token need to be removed from the response content, immediately after the login!</info>");
+            $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
+            $this->assertEquals(null, $refreshToken);
+
             $this->client->request('GET', '/authorization-tests/admin-role');
+
+            $this->output->writeln("\n<info>Check again the refresh token is removed, after a valid request on an authorized route ...</info>");
+            $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
+            $this->assertEquals(null, $refreshToken);
         } else {
             $this->output->writeln("<error>lexik_jwt_authentication.token_extractors.authorization_header enabled</error>");
             $this->output->writeln("<error>This type of autentication is don't provide security against XSS attacks!</error>");
             $this->output->writeln("<error>more info: https://blog.liplex.de/improve-security-when-working-with-jwt-and-symfony/</error>");
             
             // Save the refresh token
-            $this->output->writeln("<info>Save the refresh token ...</info>");
+            $this->output->writeln("\n<info>Save the refresh token ...</info>");
             $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
             $this->assertEquals(true, !empty($refreshToken) && is_string($refreshToken));
             
@@ -115,7 +123,9 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
 
         // Refresh the token
         if (!$token) {
-            // TODO: Cookie refresh tests ...
+            // TODO: test the BEARER cookie refresh ...
+            $this->output->writeln("<error>BEARER cookie refresh not supported yet ...</error>");
+
         } else {
             $this->output->writeln("\n<info>Refresh the JWT token</info>");
             $this->client->request('POST', '/token/refresh', [], [], [
