@@ -101,7 +101,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
 
             $this->client->request('GET', '/authorization-tests/admin-role');
 
-            $this->output->writeln("\n<info>Check again the refresh token is removed, after a valid request on an authorized route ...</info>");
+            $this->output->writeln("<info>... Check again the refresh token is removed, after a valid request on an authorized route ...</info>");
             $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
             $this->assertEquals(null, $refreshToken);
         } else {
@@ -134,8 +134,9 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
             $this->assertEquals(true, $exceptionThrown);
 
             $this->output->writeln("\n<info>Call the /token/refresh route and get a new BEARER cookie</info>");
+            $this->output->writeln("<info>Expected Status Code in secure mode 204 (HTTP_NO_CONTENT)</info>");
             $this->client->request('POST', '/token/refresh');
-            $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+            $this->assertEquals(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
 
             $this->output->writeln("\n<info>In secure mode the Refresh token need to be removed from the response content, immediately after the refresh!</info>");
             $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
@@ -143,6 +144,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
 
             $this->output->writeln("\n<info>Valid request with the new cookie</info>");
             $this->client->request('GET', '/authorization-tests/admin-role');
+            $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         } else {
             $this->output->writeln("\n<info>Refresh the JWT token</info>");
             $this->client->request('POST', '/token/refresh', [], [], [
