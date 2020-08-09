@@ -6,6 +6,8 @@ use App\Service\DependencyInjection\JWTCookieExtractorDependencyInjectionService
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Class TokenRefreshListener
@@ -32,7 +34,7 @@ class TokenRefreshListener implements EventSubscriberInterface
      * @param AuthenticationSuccessEvent $event
      * @return void
      */
-    public function setRefreshToken(AuthenticationSuccessEvent $event)
+    public function onAuthenticationSuccess(AuthenticationSuccessEvent $event): void
     {
         if ($this->service->isAuthorizationHeaderExtractorEnabled()) {
             return;
@@ -55,10 +57,33 @@ class TokenRefreshListener implements EventSubscriberInterface
     }
 
     /**
+     * @param RequestEvent $event
+     * @return void
+     */
+    public function onJWTRefreshRequest(RequestEvent $event): void
+    {
+        $request = $event->getRequest();
+
+        // https://symfony.com/doc/2.6//cookbook/service_container/event_listener.html#request-events-checking-types
+        // A single page can make several requests (one master request, and then multiple sub-requests) ...
+        if (!$event->isMasterRequest()
+            || !'gesdinet_jwt_refresh_token' === $request->attributes->get('_route')
+            || !$request->cookies->has($this->service->getRefreshCookieName())) {
+            return;
+        }
+
+        $request->attributes->set($this->service->getRefreshTokenParameterName(),
+            $request->cookies->get($this->service->getRefreshCookieName()));
+    }
+
+    /**
      * @return array
      */
     public static function getSubscribedEvents(): array
     {
-        return ['lexik_jwt_authentication.on_authentication_success' => [['setRefreshToken']]];
+        return [
+            'lexik_jwt_authentication.on_authentication_success' => [['onAuthenticationSuccess']],
+            KernelEvents::REQUEST => [['onJWTRefreshRequest']],
+        ];
     }
 }
