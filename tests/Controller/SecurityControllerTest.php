@@ -28,7 +28,7 @@ class SecurityControllerTest extends AbstractControllerTest
             'CONTENT_TYPE' => 'application/json'
         ], json_encode(['username' => 'eleven@cvlt.dev', 'password' => 'Eggo']));
 
-        if (!$token = $this->getToken()) {
+        if (!$token = $this->getJsonResponseContentValue('token')) {
             $this->output->writeln("<info>Secure httponly cookie token extractor is enabled ... Great!</info>");
             $this->client->request('GET', '/authorization-tests/user-role');
         } else {

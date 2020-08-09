@@ -37,7 +37,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
             'CONTENT_TYPE' => 'application/json'
         ], json_encode(['username' => 'eleven@cvlt.dev', 'password' => 'Eggo']));
 
-        if (!$token = $this->getToken()) {
+        if (!$token = $this->getJsonResponseContentValue('token')) {
             $this->output->writeln("<info>Secure httponly cookie token extractor is enabled ... Great!</info>");
             $this->client->request('GET', '/authorization-tests/user-role');
         } else {
@@ -77,7 +77,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
 
         $exceptionThrown = false;
         try {
-            if (!$token = $this->getToken()) {
+            if (!$token = $this->getJsonResponseContentValue('token')) {
                 $this->client->request('GET', '/authorization-tests/admin-role');
             } else {
                 $this->client->request('GET', '/authorization-tests/admin-role', [], [], parent::getAuthHeaders($token));
@@ -93,7 +93,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
             'CONTENT_TYPE' => 'application/json'
         ], json_encode(['username' => 'dextermorgan@cvlt.dev', 'password' => 'Debra']));
 
-        if (!$token = $this->getToken()) {
+        if (!$token = $this->getJsonResponseContentValue('token')) {
             $this->output->writeln("<info>Secure httponly cookie token extractor is enabled ... Great!</info>");
             $this->client->request('GET', '/authorization-tests/admin-role');
         } else {
@@ -103,28 +103,27 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
             
             // Save the refresh token
             $this->output->writeln("<info>Save the refresh token ...</info>");
-            $refreshToken = $this->getToken('refresh_token');
+            $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
             $this->assertEquals(true, !empty($refreshToken) && is_string($refreshToken));
             
             $this->client->request('GET', '/authorization-tests/admin-role', [], [], parent::getAuthHeaders($token));
         }
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
 
-
         $this->output->writeln("\n<info>Waiting for token expiration (sleep: 6 seconds -> (the token expiration time is 5 seconds in test environment.))</info>");
         sleep(6);
 
         // Refresh the token
-        $this->output->writeln("\n<info>Refresh the JWT token</info>");
         if (!$token) {
-            // ...
-            $this->output->writeln("<error>Refresh token supported only with authorization header type token extractor ...</error>");
+            // TODO: Cookie refresh tests ...
         } else {
+            $this->output->writeln("\n<info>Refresh the JWT token</info>");
             $this->client->request('POST', '/token/refresh', [], [], [
                 'CONTENT_TYPE' => 'application/json'
-            ], json_encode(['refresh_token' => $refreshToken]));
+            ], json_encode([parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name') => $refreshToken]));
+            $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
 
-            $newToken = $this->getToken();
+            $newToken = $this->getJsonResponseContentValue('token');
             $this->assertEquals(true, !empty($newToken) && is_string($newToken));
             $this->assertEquals(false, $token == $newToken);
 

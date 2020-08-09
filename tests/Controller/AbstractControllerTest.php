@@ -107,20 +107,20 @@ abstract class AbstractControllerTest extends WebTestCase
     }
 
     /**
-     * @param string $tokenName The name of the token (token or refresh_token)
-     * @return string|null
+     * @param string $key
+     * @return mixed|null
      */
-    protected function getToken(string $tokenName = 'token'): ?string
+    protected function getJsonResponseContentValue(string $key)
     {
         if (empty($responseContent = json_decode($this->client->getResponse()->getContent(), true))) {
             return null;
         }
 
-        if (empty($responseContent[$tokenName])) {
+        if (empty($responseContent[$key])) {
             return null;
         }
 
-        return $responseContent[$tokenName];
+        return $responseContent[$key];
     }
 
     /**
