@@ -45,7 +45,11 @@ class SecurityControllerTest extends AbstractControllerTest
             $this->output->writeln("\n<info>Logout requested ...</info>");
             $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
 
-            $this->output->writeln("<info>Expected exception on authorized route: AccessDeniedException</info>");
+            $this->output->writeln("\n<info>After a logout request, a token refresh request should be denied! (Expected status code:401 (UNAUTHORIZED))</info>");
+            $this->client->request('POST', '/token/refresh');
+            $this->assertEquals(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+            
+            $this->output->writeln("\n<info>Expected exception on authorized route: AccessDeniedException</info>");
             $this->expectException(AccessDeniedException::class);
             $this->client->request('GET', '/authorization-tests/user-role');
         }
