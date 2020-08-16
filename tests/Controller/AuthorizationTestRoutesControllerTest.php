@@ -4,6 +4,8 @@ namespace App\Tests\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class AuthorizationTestRoutesControllerTest
@@ -52,10 +54,17 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
     /**
      * @return void
      * @throws \Exception
+     * @throws ParseException
      */
     public function testAdminRoleRequired()
     {
         $this->runCommand('doctrine:fixtures:load --append --group=UserFixtures');
+        $lexikJwtConfig = Yaml::parseFile(parent::$kernel->getContainer()->getParameter('kernel.project_dir').'/config/packages/lexik_jwt_authentication.yaml');
+        if (!empty($lexikJwtConfig['lexik_jwt_authentication']['token_extractors']['cookie']['name'])) {
+            $cookieName = $lexikJwtConfig['lexik_jwt_authentication']['token_extractors']['cookie']['name'];
+        } else {
+            $cookieName = '';
+        }
         $this->output->writeln("\r\n<info>Test a route where admin role (ROLE_ADMIN) is required:</info>");
         $this->client->catchExceptions(false);
 
@@ -124,6 +133,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
         // Refresh the token
         if (!$token) {
             $this->output->writeln("\n<info>BEARER cookie expired ...</info>");
+            $this->assertEquals(true, empty($this->client->getCookieJar()->get($cookieName)));
             $this->output->writeln("<info>In secure mode expected: AccessDeniedException!</info>");
             $exceptionThrown = false;
             try {
@@ -137,6 +147,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
             $this->output->writeln("<info>Expected Status Code in secure mode 204 (HTTP_NO_CONTENT)</info>");
             $this->client->request('POST', '/token/refresh');
             $this->assertEquals(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+            $this->assertEquals(false, empty($this->client->getCookieJar()->get($cookieName)));
 
             $this->output->writeln("\n<info>In secure mode the Refresh token need to be removed from the response content, immediately after the refresh!</info>");
             $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
