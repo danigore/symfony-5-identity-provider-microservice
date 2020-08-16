@@ -104,6 +104,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
 
         if (!$token = $this->getJsonResponseContentValue('token')) {
             $this->output->writeln("<info>Secure httponly cookie token extractor is enabled ... Great!</info>");
+            $this->assertEquals(true, $this->client->getCookieJar()->get($cookieName)->isHttpOnly());
             $this->output->writeln("\n<info>In secure mode the Refresh token need to be removed from the response content, immediately after the login!</info>");
             $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
             $this->assertEquals(null, $refreshToken);
