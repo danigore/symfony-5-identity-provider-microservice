@@ -18,7 +18,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
 class SecurityController
 {
     /**
-     * @Route("/logout", name="app_logout", methods={"GET"})
+     * @Route("/logout", name="app_logout", methods={"DELETE"})
      * @param Request $request
      * @param JWTCookieExtractorDependencyInjectionService $service
      * @return JsonResponse

@@ -1,7 +1,9 @@
 api_login_check:
     path: /login_check
+    methods: 'POST'
 
 #https://github.com/markitosgv/JWTRefreshTokenBundle#step-3-configure-your-own-routing-to-refresh-token
 gesdinet_jwt_refresh_token:
     path: /token/refresh
+    methods: 'UPDATE'
     controller: gesdinet.jwtrefreshtoken::refresh
