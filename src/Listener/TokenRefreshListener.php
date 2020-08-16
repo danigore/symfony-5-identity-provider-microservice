@@ -63,11 +63,10 @@ class TokenRefreshListener implements EventSubscriberInterface
     public function onJWTRefreshRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-
         // https://symfony.com/doc/2.6//cookbook/service_container/event_listener.html#request-events-checking-types
         // A single page can make several requests (one master request, and then multiple sub-requests) ...
         if (!$event->isMasterRequest()
-            || !'gesdinet_jwt_refresh_token' === $request->attributes->get('_route')
+            || !('gesdinet_jwt_refresh_token' === $request->get('_route'))
             || !$request->cookies->has($this->service->getRefreshCookieName())) {
             return;
         }
