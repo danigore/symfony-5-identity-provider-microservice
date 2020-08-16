@@ -2,3 +2,19 @@ gesdinet_jwt_refresh_token:
     user_identity_field: email
     ttl: 2592000
     token_parameter_name: refresh_token
+
+    # https://github.com/markitosgv/JWTRefreshTokenBundle#config-userprovider
+    # Very important! The JWTRefreshTokenBundle's UserProvider is a joke:
+    # https://github.com/markitosgv/JWTRefreshTokenBundle/blob/master/Security/Provider/RefreshTokenProvider.php
+    # If you don't set a user_provider, the default not watching at all the roles!
+    
+    # So, would be evident getting here the jwt database-less provider of LexikJWTAuthenticationBundle:
+    # Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserProvider: lexik_jwt_authentication.security.jwt_user_provider
+    
+    # Firstly, that's a private service (in Symfony 5 the all services are private by default), but,
+    # because the security configuration of database-less authentication, thats yet available under the id:
+    # security.user.provider.concrete.jwt
+    
+    # Secondly, the refresh token seems like bears only the username field,
+    # so in this case the database should be hit again for delivering a new token
+    user_provider: security.user.provider.concrete.app_user_provider

@@ -6,6 +6,9 @@ security:
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
+        # https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/8-jwt-user-provider.md#configuring-the-user-provider
+        jwt:
+            lexik_jwt: ~
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
@@ -18,31 +21,26 @@ security:
 
         login:
             # allow authentication using a form or HTTP basic
-            # form_login: ~
             #http_basic: ~
             pattern: ^/login
             stateless: true
+            provider: app_user_provider
             json_login:
-                #The check_path can also be a route name (but cannot have mandatory wildcards - e.g. /login/{foo}
+                # The check_path can also be a route name (but cannot have mandatory wildcards - e.g. /login/{foo}
                 check_path: /login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-        #put it before all your other firewall API entries
+        # put it before all your other firewall API entries
         refresh:
             pattern: ^/token/refresh
             stateless: true
-            security: false #Symfony 6 design -> anonymous: true not valid anymore!
+            security: false # Symfony 6 design -> anonymous: true not valid anymore!
 
         api:
             #http_basic: ~
             stateless: true
-
-            provider: app_user_provider
-            #json_login:
-                #The check_path can also be a route name (but cannot have mandatory wildcards - e.g. /login/{foo}
-            #    check_path: app_login
-
+            provider: jwt
             guard:
                 authenticators:
                 - lexik_jwt_authentication.jwt_token_authenticator
