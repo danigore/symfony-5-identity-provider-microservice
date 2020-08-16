@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
@@ -29,6 +30,17 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
         try {
             $this->client->request('GET', '/authorization-tests/user-role');
         } catch (AccessDeniedException $e) {
+            $exceptionThrown = true;
+        }
+        $this->assertEquals(true, $exceptionThrown);
+
+        $this->output->writeln("\n<info>Only POST Method Allowed on /login_check</info>");
+        $exceptionThrown = false;
+        try {
+            $this->client->request('GET', '/login_check', [], [], [
+                'CONTENT_TYPE' => 'application/json'
+            ], json_encode(['username' => 'eleven@cvlt.dev', 'password' => 'Eggo']));
+        } catch (MethodNotAllowedHttpException $e) {
             $exceptionThrown = true;
         }
         $this->assertEquals(true, $exceptionThrown);
@@ -145,8 +157,17 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
             $this->assertEquals(true, $exceptionThrown);
 
             $this->output->writeln("\n<info>Call the /token/refresh route and get a new BEARER cookie</info>");
+            $this->output->writeln("<info>POST /token/refresh: Method Not Allowed (Allow: UPDATE)</info>");
+            $exceptionThrown = false;
+            try {
+                $this->client->request('POST', '/token/refresh');
+            } catch (MethodNotAllowedHttpException $e) {
+                $exceptionThrown = true;
+            }
+            $this->assertEquals(true, $exceptionThrown);
+            
             $this->output->writeln("<info>Expected Status Code in secure mode 204 (HTTP_NO_CONTENT)</info>");
-            $this->client->request('POST', '/token/refresh');
+            $this->client->request('UPDATE', '/token/refresh');
             $this->assertEquals(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
             $this->assertEquals(false, empty($this->client->getCookieJar()->get($cookieName)));
 
@@ -159,11 +180,22 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
             $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         } else {
             $this->output->writeln("\n<info>Refresh the JWT token</info>");
-            $this->client->request('POST', '/token/refresh', [], [], [
+
+            $this->output->writeln("<info>POST /token/refresh: Method Not Allowed (Allow: UPDATE)</info>");
+            $exceptionThrown = false;
+            try {
+                $this->client->request('POST', '/token/refresh', [], [], [
+                    'CONTENT_TYPE' => 'application/json'
+                ], json_encode([parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name') => $refreshToken]));
+            } catch (MethodNotAllowedHttpException $e) {
+                $exceptionThrown = true;
+            }
+            $this->assertEquals(true, $exceptionThrown);
+
+            $this->client->request('UPDATE', '/token/refresh', [], [], [
                 'CONTENT_TYPE' => 'application/json'
             ], json_encode([parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name') => $refreshToken]));
             $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
-
             $newToken = $this->getJsonResponseContentValue('token');
             $this->assertEquals(true, !empty($newToken) && is_string($newToken));
             $this->assertEquals(false, $token == $newToken);
