@@ -1,8 +1,10 @@
-1; Just install the dependencies:
+This is a Symfony 5 microservice skeleton with stateless, logout and refreshable JWT authentication, with secure http-only cookie token extractor and database-less user provider.
+
+1; Update dependencies:
 ---
 `$ composer update`
 
-2; Generate the SSH keys:
+2; Generate your SSH keys:
 ---
 `$ mkdir -p config/jwt`
 
@@ -17,6 +19,7 @@
 ---
 `$ php bin/phpunit`
 
+*The `./bin/phpunit` command is created by Symfony Flex when installing the phpunit-bridge package. If the command is missing, you can remove the package (`composer remove symfony/phpunit-bridge`) and install it again. **Another solution is to remove the project’s symfony.lock file and run** `composer install` to force the execution of all Symfony Flex recipes.*
 
 
 > #### Additionally
@@ -27,5 +30,5 @@
 > *... but the shift back to the authorization header type extractor is easy to, just update the lexik_jwt_authentication config file by this commit:*
 > [commit/Extended lexik_jwt_authentication configuration](https://github.com/danigore/symfony-5-microservice-auth/commit/6a952b83af99340c7335ef0cc276c5a18058272f)
 >
-> ***More info about why is the combination of JWT and XSS so relevant here***:
+> ***More info about why is the combination of JWT and XSS so relevant***:
 > [Christian Kolb:Improve security when working with JWT and Symfony](https://blog.liplex.de/improve-security-when-working-with-jwt-and-symfony/)
