@@ -5,8 +5,6 @@ namespace App\Tests\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class AuthorizationTestRoutesControllerTest
@@ -66,7 +64,6 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
     /**
      * @return void
      * @throws \Exception
-     * @throws ParseException
      */
     public function testAdminRoleRequired()
     {
