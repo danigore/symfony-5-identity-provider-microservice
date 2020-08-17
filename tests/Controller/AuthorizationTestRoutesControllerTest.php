@@ -71,12 +71,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractControllerTest
     public function testAdminRoleRequired()
     {
         $this->runCommand('doctrine:fixtures:load --append --group=UserFixtures');
-        $lexikJwtConfig = Yaml::parseFile(parent::$kernel->getContainer()->getParameter('kernel.project_dir').'/config/packages/lexik_jwt_authentication.yaml');
-        if (!empty($lexikJwtConfig['lexik_jwt_authentication']['token_extractors']['cookie']['name'])) {
-            $cookieName = $lexikJwtConfig['lexik_jwt_authentication']['token_extractors']['cookie']['name'];
-        } else {
-            $cookieName = '';
-        }
+        $cookieName = parent::$kernel->getContainer()->getParameter('app.jwt_cookie_name');
         $this->output->writeln("\r\n<info>Test a route where admin role (ROLE_ADMIN) is required:</info>");
         $this->client->catchExceptions(false);
 

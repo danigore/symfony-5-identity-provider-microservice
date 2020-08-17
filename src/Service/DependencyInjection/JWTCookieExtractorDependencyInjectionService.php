@@ -26,7 +26,7 @@ class JWTCookieExtractorDependencyInjectionService
     /**
      * @var string $cookieName
      */
-    private string $cookieName = 'BEARER';
+    private string $cookieName;
 
     /**
      * @var string $refreshCookieName
@@ -46,6 +46,7 @@ class JWTCookieExtractorDependencyInjectionService
     /**
      * JWTCookieExtractorDependencyInjectionService constructor.
      * @param ParameterBagInterface $params
+     * @param string $refreshCookieName
      * @throws ParseException
      */
     public function __construct(ParameterBagInterface $params, string $refreshCookieName)
@@ -55,9 +56,8 @@ class JWTCookieExtractorDependencyInjectionService
             ['authorization_header']['enabled']);
         $this->httpOnlyCookieExtractorEnabled = !empty($lexikJwtConfig['lexik_jwt_authentication']['token_extractors']
             ['cookie']['enabled']);
-        if (!empty($lexikJwtConfig['lexik_jwt_authentication']['token_extractors']['cookie']['name'])) {
-            $this->cookieName = $lexikJwtConfig['lexik_jwt_authentication']['token_extractors']['cookie']['name'];
-        }
+        
+        $this->cookieName = $params->get('app.jwt_cookie_name');
         $this->refreshCookieName = $refreshCookieName;
 
         try {

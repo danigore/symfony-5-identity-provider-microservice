@@ -15,12 +15,12 @@ lexik_jwt_authentication:
         # check token in a cookie
         cookie:
             enabled: true
-            name: BEARER
+            name: '%env(JWT_COOKIE_NAME)%'
 
     # Automatically generating cookies:
     #https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/1-configuration-reference.md#automatically-generating-cookies
     set_cookies:
-        BEARER: ~
+        '%env(JWT_COOKIE_NAME)%': ~
             #lifetime: null #defaults to token ttl
             #samesite: lax
             #path: /

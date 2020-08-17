@@ -21,7 +21,6 @@ security:
 
         login:
             # allow authentication using a form or HTTP basic
-            #http_basic: ~
             pattern: ^/login
             stateless: true
             provider: app_user_provider
@@ -38,7 +37,6 @@ security:
             security: false # Symfony 6 design -> anonymous: true not valid anymore!
 
         api:
-            #http_basic: ~
             stateless: true
             provider: jwt
             guard:
