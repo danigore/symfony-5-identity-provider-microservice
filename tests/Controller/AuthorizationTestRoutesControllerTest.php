@@ -2,13 +2,14 @@
 
 namespace App\Tests\Controller;
 
+use App\Tests\AbstractSecurityTest;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class AuthorizationTestRoutesControllerTest
  * @package App\Tests\Controller
  */
-class AuthorizationTestRoutesControllerTest extends AbstractSecurityControllerTest
+class AuthorizationTestRoutesControllerTest extends AbstractSecurityTest
 {
     /**
      * @return void

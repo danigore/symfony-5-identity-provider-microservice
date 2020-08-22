@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests;
 
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
@@ -16,10 +16,10 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 /**
- * Class AbstractControllerTest
- * @package App\Tests\Controller
+ * Class AbstractFunctionalTest
+ * @package App\Tests
  */
-abstract class AbstractControllerTest extends WebTestCase
+abstract class AbstractFunctionalTest extends WebTestCase
 {
     /**
      * @var EntityManager $manager

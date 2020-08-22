@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests;
 
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
- * Class AbstractSecurityControllerTest
- * @package App\Tests\Controller
+ * Class AbstractSecurityTest
+ * @package App\Tests
  */
-abstract class AbstractSecurityControllerTest extends AbstractControllerTest
+abstract class AbstractSecurityTest extends AbstractFunctionalTest
 {
     /**
      * @return boolean

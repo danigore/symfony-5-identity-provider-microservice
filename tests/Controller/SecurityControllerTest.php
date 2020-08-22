@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Exception\LogoutNotSupportedWithAuthorizationHeaderTypeTokenExtractorException;
+use App\Tests\AbstractSecurityTest;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
@@ -10,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
  * Class SecurityControllerTest
  * @package App\Tests\Controller
  */
-class SecurityControllerTest extends AbstractSecurityControllerTest
+class SecurityControllerTest extends AbstractSecurityTest
 {
     /**
      * @return void
