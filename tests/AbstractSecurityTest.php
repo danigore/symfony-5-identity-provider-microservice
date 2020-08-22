@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -16,6 +17,25 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
     protected function authorizationHeaderTypeTokenExtractorIsEnabled(): bool
     {
         return !empty($this->getJsonResponseContentValue('token'));
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getToken(): ?string
+    {
+        if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
+            return $this->getJsonResponseContentValue('token');
+        }
+
+        $cookie = $this->client->getCookieJar()->get(parent::$kernel->getContainer()
+            ->getParameter('app.jwt_cookie_name'));
+
+        if (!$cookie instanceof Cookie) {
+            return null;
+        }
+
+        return $cookie->getValue();
     }
 
     /**
@@ -38,7 +58,7 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
     protected function getAuthHeaders(?string $token = null): array
     {
         if (!$token) {
-            $token = parent::getJsonResponseContentValue('token');
+            $token = $this->getJsonResponseContentValue('token');
         }
 
         return [
