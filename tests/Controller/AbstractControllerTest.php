@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 /**
  * Class AbstractControllerTest
@@ -94,19 +95,6 @@ abstract class AbstractControllerTest extends WebTestCase
     }
 
     /**
-     * @param string $token
-     * @return array
-     */
-    protected static function getAuthHeaders(string $token): array
-    {
-        return [
-            'HTTP_AUTHORIZATION' => "bearer {$token}",
-            'CONTENT_TYPE' => 'application/ld+json',
-            'HTTP_ACCEPT' => 'application/ld+json'
-        ];
-    }
-
-    /**
      * @param string $key
      * @return mixed|null
      */
@@ -121,6 +109,22 @@ abstract class AbstractControllerTest extends WebTestCase
         }
 
         return $responseContent[$key];
+    }
+    
+    /**
+     * @param string $method
+     * @param string $uri
+     * @return void
+     */
+    protected function methodNotAllowedOnRoute(string $method, string $uri): void
+    {
+        $exceptionThrown = false;
+        try {
+            $this->client->request($method, $uri);
+        } catch (MethodNotAllowedHttpException $e) {
+            $exceptionThrown = true;
+        }
+        $this->assertEquals(true, $exceptionThrown);
     }
 
     /**
