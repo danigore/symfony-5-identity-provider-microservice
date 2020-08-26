@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\DependencyInjection;
+namespace App\Service;
 
 use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -8,10 +8,10 @@ use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class JWTCookieExtractorDependencyInjectionService
+ * Class JWTConfigurationService
  * @package App\Service\DependencyInjection
  */
-class JWTCookieExtractorDependencyInjectionService
+class JWTConfigurationService
 {
     /**
      * @var bool $authorizationHeaderExtractorEnabled
@@ -44,7 +44,7 @@ class JWTCookieExtractorDependencyInjectionService
     private string $refreshTokenParameterName = 'refresh_token';
 
     /**
-     * JWTCookieExtractorDependencyInjectionService constructor.
+     * JWTConfigurationService constructor.
      * @param ParameterBagInterface $params
      * @param string $refreshCookieName
      * @throws ParseException

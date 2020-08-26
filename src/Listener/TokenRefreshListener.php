@@ -2,7 +2,7 @@
 
 namespace App\Listener;
 
-use App\Service\DependencyInjection\JWTCookieExtractorDependencyInjectionService;
+use App\Service\JWTConfigurationService;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -16,16 +16,16 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class TokenRefreshListener implements EventSubscriberInterface
 {
     /**
-     * @var JWTCookieExtractorDependencyInjectionService $service
+     * @var JWTConfigurationService $service
      */
-    private JWTCookieExtractorDependencyInjectionService $service;
+    private JWTConfigurationService $service;
 
     /**
      * TokenRefreshListener constructor.
      *
-     * @param JWTCookieExtractorDependencyInjectionService $service
+     * @param JWTConfigurationService $service
      */
-    public function __construct(JWTCookieExtractorDependencyInjectionService $service)
+    public function __construct(JWTConfigurationService $service)
     {
         $this->service = $service;
     }
