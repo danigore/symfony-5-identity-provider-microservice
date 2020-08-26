@@ -104,11 +104,21 @@ abstract class AbstractFunctionalTest extends WebTestCase
             return null;
         }
 
-        if (empty($responseContent[$key])) {
+        if (!empty($responseContent[$key])) {
+            return $responseContent[$key];
+        }
+
+        if (!is_array($responseContent)) {
             return null;
         }
 
-        return $responseContent[$key];
+        $responseContent = reset($responseContent);
+
+        if (is_array($responseContent) && !empty($responseContent[$key])) {
+            return $responseContent[$key];
+        }
+
+        return null;
     }
     
     /**
