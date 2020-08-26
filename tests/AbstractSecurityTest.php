@@ -94,9 +94,9 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
      */
     protected function accessDeniedForRoleTest(string $uri, string $role = 'ROLE_USER', string $method = 'GET'): void
     {
-        $this->output->writeln("<info>Simulate an invalid request with $role ...</info>");
         $this->simulateLogin($role);
 
+        $this->output->writeln("<info>Simulate an invalid request with $role ...</info>");
         $exceptionThrown = false;
         try {
             if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
