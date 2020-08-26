@@ -22,10 +22,9 @@ class AuthorizationTestRoutesControllerTest extends AbstractSecurityTest
         $this->client->catchExceptions(false);
 
         $this->accessDeniedWithoutLoginTest('/authorization-tests/user-role');
-
-        $this->output->writeln("\n<info>Simulate a login with ROLE_USER ...</info>");
         $this->simulateLogin();
 
+        $this->output->writeln("\n<info>Simulate a valid request with ROLE_USER ...</info>");
         if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
             $this->client->request('GET', '/authorization-tests/user-role', [], [], $this->getAuthHeaders());
         } else {
@@ -46,13 +45,10 @@ class AuthorizationTestRoutesControllerTest extends AbstractSecurityTest
         $this->client->catchExceptions(false);
 
         $this->accessDeniedWithoutLoginTest('/authorization-tests/admin-role');
-
-        $this->output->writeln("\n<info>Simulate an invalid request with ROLE_USER ...</info>");
         $this->accessDeniedForRoleTest('/authorization-tests/admin-role');
-
-        $this->output->writeln("\n<info>Simulate a valid request with ROLE_ADMIN ...</info>");
         $this->simulateLogin('ROLE_ADMIN');
 
+        $this->output->writeln("\n<info>Simulate a valid request with ROLE_ADMIN ...</info>");
         if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
             $this->client->request('GET', '/authorization-tests/admin-role', [], [], $this->getAuthHeaders());
         } else {

@@ -21,7 +21,6 @@ class JWTCreatedListenerTest extends AbstractSecurityTest
         // gets the special container that allows fetching private services
         $tokenDecoder = parent::$container->get('lexik_jwt_authentication.encoder.lcobucci');
 
-        $this->output->writeln("\n<info>Simulate a valid request with ROLE_ADMIN ...</info>");
         $this->simulateLogin('ROLE_ADMIN');
         $token = $this->getToken();
         $this->assertEquals(true, !empty($token) && is_string($token));

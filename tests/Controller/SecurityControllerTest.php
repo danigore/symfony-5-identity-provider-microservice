@@ -24,7 +24,6 @@ class SecurityControllerTest extends AbstractSecurityTest
         $this->client->catchExceptions(false);
 
         $this->accessDeniedWithoutLoginTest('/logout', 'DELETE');
-
         $this->simulateLogin();
 
         if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
@@ -89,7 +88,6 @@ class SecurityControllerTest extends AbstractSecurityTest
         $this->methodNotAllowedOnLoginCheckTest('PUT');
         $this->methodNotAllowedOnLoginCheckTest('DELETE');
 
-        $this->output->writeln("\n<info>Simulate a login with ROLE_USER ...</info>");
         $this->simulateLogin();
 
         if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {

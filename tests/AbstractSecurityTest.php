@@ -41,11 +41,12 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
     /**
      * Simulate a login request by ROLE
      *
-     * @param string|null $role
+     * @param string $role
      * @return void
      */
-    protected function simulateLogin(?string $role = null): void
+    protected function simulateLogin(string $role = 'ROLE_USER'): void
     {
+        $this->output->writeln("\n<info>Simulate a login with $role ...</info>");
         $this->client->request('POST', '/login_check', [], [], [
             'CONTENT_TYPE' => 'application/json'
         ], json_encode($this->getUserCredentialsByRole($role)));
@@ -75,7 +76,7 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
      */
     protected function accessDeniedWithoutLoginTest(string $uri, string $method = 'GET'): void
     {
-        $this->output->writeln("<info>Invalid request without JWT token ...</info>");
+        $this->output->writeln("<info>Simulate an invalid request without JWT token ...</info>");
         $exceptionThrown = false;
         try {
             $this->client->request($method, $uri);
@@ -93,6 +94,7 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
      */
     protected function accessDeniedForRoleTest(string $uri, string $role = 'ROLE_USER', string $method = 'GET'): void
     {
+        $this->output->writeln("<info>Simulate an invalid request with $role ...</info>");
         $this->simulateLogin($role);
 
         $exceptionThrown = false;
@@ -112,7 +114,7 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
      * @param string|null $role
      * @return array
      */
-    private function getUserCredentialsByRole(?string $role): array
+    private function getUserCredentialsByRole(string $role): array
     {
         switch ($role) {
             case 'ROLE_ADMIN': return ['username' => 'dextermorgan@cvlt.dev', 'password' => 'Debra'];

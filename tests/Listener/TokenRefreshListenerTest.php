@@ -21,7 +21,6 @@ class TokenRefreshListenerTest extends AbstractSecurityTest
         $this->output->writeln("\r\n<info>Test the token refresh:</info>");
         $this->client->catchExceptions(false);
 
-        $this->output->writeln("\n<info>Simulate a valid request with ROLE_ADMIN ...</info>");
         $this->simulateLogin('ROLE_ADMIN');
 
         if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
