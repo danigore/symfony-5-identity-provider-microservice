@@ -4,6 +4,8 @@ namespace App\Tests;
 
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class AbstractSecurityTest
@@ -13,10 +15,15 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
 {
     /**
      * @return boolean
+     * @throws ParseException
      */
     protected function authorizationHeaderTypeTokenExtractorIsEnabled(): bool
     {
-        return !empty($this->getJsonResponseContentValue('token'));
+        $lexikJwtConfig = Yaml::parseFile(parent::$kernel->getContainer()
+            ->getParameter('kernel.project_dir').'/config/packages/lexik_jwt_authentication.yaml');
+            
+        return !empty($lexikJwtConfig['lexik_jwt_authentication']['token_extractors']
+            ['authorization_header']['enabled']);
     }
 
     /**
