@@ -128,4 +128,25 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
             default: return ['username' => 'eleven@cvlt.dev', 'password' => 'Eggo'];
         }
     }
+
+    /**
+     * Refresh the Json Web Token
+     *
+     * @return void
+     */
+    protected function refreshTheToken(): void
+    {
+        if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
+            $refreshTokenParameterName = parent::$kernel->getContainer()
+            ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name');
+            $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()
+                ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
+
+            $this->client->request('UPDATE', '/token/refresh', [], [], [
+                'CONTENT_TYPE' => 'application/json'
+            ], json_encode([$refreshTokenParameterName => $refreshToken]));
+        } else {
+            $this->client->request('UPDATE', '/token/refresh');
+        }
+    }
 }

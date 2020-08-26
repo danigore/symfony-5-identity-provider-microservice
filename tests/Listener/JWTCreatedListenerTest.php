@@ -32,5 +32,14 @@ class JWTCreatedListenerTest extends AbstractSecurityTest
         $this->assertEquals(true, in_array('ROLE_USER', $payload['roles']));
         $this->assertEquals(true, empty($payload['password']));
         $this->assertEquals(1, $payload['id']);
+
+        $this->output->writeln("\n<info>Waiting for token expiration (sleep: 6 seconds -> (the token expiration time is 5 seconds in test environment.))</info>");
+        sleep(6);
+        $this->refreshTheToken();
+        $token = $this->getToken();
+
+        $this->output->writeln("\n<info>Decode the token again</info>");
+        $payload = $tokenDecoder->decode($token);
+        $this->assertEquals(1, $payload['id']);
     }
 }
