@@ -33,3 +33,7 @@ services:
     App\Service\JWTConfigurationService:
         arguments:
             $refreshCookieName: '%env(REFRESH_TOKEN_COOKIE_NAME)%'
+
+    App\Listener\AuthenticationSuccessListener:
+        arguments:
+            - '@service_container'
