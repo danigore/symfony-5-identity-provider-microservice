@@ -2,8 +2,12 @@
 
 namespace App\Tests;
 
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\InvalidPayloadException;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\UserNotFoundException;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\PreAuthenticationJWTUserToken;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -13,6 +17,56 @@ use Symfony\Component\Yaml\Yaml;
  */
 abstract class AbstractSecurityTest extends AbstractFunctionalTest
 {
+    /**
+     * Get the logged in User from the JWTTokenAuthenticator.
+     * 
+     * Additionally: There are some problems with the original symfony security.token_storage, what
+     * probably can be traced from the default doctrine's app_user_provider ...
+     * You can get the token and from that the original User entity immediately after the login,
+     * and this is may okay, but even worst that, the original User entity still available through this service,
+     * after the token expiration!
+     * The AuthorizationTestRoutesControllerTest(s) are prove it, it has no effect to the authorization checks,
+     * the isGranted method IN A CONTROLLER returns false, when the token expired,
+     * but directly the entity accessable later on.
+     * 
+     * Special funny, after a token refresh the (security.token_storage)->getToken() returns null,
+     * so there is no token, and logically no UserInterface imlemented object anymore.
+     * 
+     * Across the lexik_jwt_authentication.jwt_token_authenticator you can get the databaseless User object,
+     * (originally Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUser) from JWT,
+     * and this object is not accessable after the token expiration.
+     * 
+     * @return UserInterface|null
+     * @throws \InvalidArgumentException If preAuthToken is not of the good type
+     * @throws InvalidPayloadException   If the user identity field is not a key of the payload
+     * @throws UserNotFoundException     If no user can be loaded from the given token
+     */
+    protected function getUser(): ?UserInterface
+    {
+        $rawToken = $this->getToken();
+        if (!$rawToken) {
+            return null;
+        }
+
+        $tokenDecoder = parent::$container->get('lexik_jwt_authentication.encoder.lcobucci');
+        $JWTTokenAuthenticator = parent::$container->get('lexik_jwt_authentication.jwt_token_authenticator');
+
+        $payload = $tokenDecoder->decode($rawToken);
+        $token = new PreAuthenticationJWTUserToken($rawToken);
+        $token->setPayload($payload);
+
+        $user = $JWTTokenAuthenticator->getUser(
+            $token,
+            parent::$container->get('security.user.provider.concrete.jwt')
+        );
+        
+        if (!$user instanceof UserInterface) {
+            return null;
+        }
+
+        return $user;
+    }
+
     /**
      * @return boolean
      * @throws ParseException
