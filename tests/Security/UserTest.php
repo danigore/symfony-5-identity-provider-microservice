@@ -2,8 +2,8 @@
 
 namespace App\Tests\Security;
 
+use App\Security\UserInterface;
 use App\Tests\AbstractSecurityTest;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Class UserTest

@@ -8,7 +8,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUser;
  * Class User
  * @package App\Security
  */
-final class User extends JWTUser
+final class User extends JWTUser implements UserInterface
 {
     /**
      * @var int $id

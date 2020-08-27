@@ -2,12 +2,12 @@
 
 namespace App\Tests;
 
+use App\Security\UserInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\InvalidPayloadException;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\UserNotFoundException;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\PreAuthenticationJWTUserToken;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
