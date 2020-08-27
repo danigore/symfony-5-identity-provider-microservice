@@ -8,7 +8,8 @@ security:
     providers:
         # https://github.com/lexik/LexikJWTAuthenticationBundle/blob/master/Resources/doc/8-jwt-user-provider.md#configuring-the-user-provider
         jwt:
-            lexik_jwt: ~
+            lexik_jwt:
+                class: App\Security\User
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
