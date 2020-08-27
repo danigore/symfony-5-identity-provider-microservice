@@ -4,6 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Tests\AbstractSecurityTest;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Class AuthorizationTestRoutesControllerTest
@@ -32,6 +33,16 @@ class AuthorizationTestRoutesControllerTest extends AbstractSecurityTest
         }
 
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+
+        $this->output->writeln("\n<info>Waiting for token expiration (sleep: 6 seconds -> (the token expiration time is 5 seconds in test environment.))</info>");
+        sleep(6);
+        $this->output->writeln("\n<info>Simulate an invalid request with the expired token: expected AccessDeniedException</info>");
+        $this->expectException(AccessDeniedException::class);
+        if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
+            $this->client->request('GET', '/authorization-tests/user-role', [], [], $this->getAuthHeaders());
+        } else {
+            $this->client->request('GET', '/authorization-tests/user-role');
+        }
     }
 
     /**
@@ -56,5 +67,15 @@ class AuthorizationTestRoutesControllerTest extends AbstractSecurityTest
         }
 
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+
+        $this->output->writeln("\n<info>Waiting for token expiration (sleep: 6 seconds -> (the token expiration time is 5 seconds in test environment.))</info>");
+        sleep(6);
+        $this->output->writeln("\n<info>Simulate an invalid request with the expired token: expected AccessDeniedException</info>");
+        $this->expectException(AccessDeniedException::class);
+        if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
+            $this->client->request('GET', '/authorization-tests/admin-role', [], [], $this->getAuthHeaders());
+        } else {
+            $this->client->request('GET', '/authorization-tests/admin-role');
+        }
     }
 }
