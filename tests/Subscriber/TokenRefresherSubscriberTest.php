@@ -1,21 +1,69 @@
 <?php
 
-namespace App\Tests\Listener;
+namespace App\Tests\Subscriber;
 
 use App\Tests\AbstractSecurityTest;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 /**
- * Class TokenRefreshListenerTest
- * @package App\Tests\Listener
+ * Class TokenRefresherSubscriberTest
+ * @package App\Tests\Subscriber
  */
-class TokenRefreshListenerTest extends AbstractSecurityTest
+class TokenRefresherSubscriberTest extends AbstractSecurityTest
 {
     /**
      * @return void
      */
-    public function testTokenRefresh(): void
+    public function testSetRefreshTokenCookie(): void
+    {
+        $this->runCommand('doctrine:fixtures:load --append --group=UserFixtures');
+        $this->output->writeln("\r\n<info>Test the refresh token cookie setted:</info>");
+        $this->client->catchExceptions(false);
+
+        $this->simulateLogin('ROLE_ADMIN');
+
+        $cookie = $this->client->getCookieJar()->get('BEARER_REFRESH');
+
+        if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
+            $this->assertSame(null, $cookie);
+        } else {
+            $this->assertSame(true, $cookie instanceof Cookie);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function testRemoveRefreshTokenFromResponse(): void
+    {
+        $this->runCommand('doctrine:fixtures:load --append --group=UserFixtures');
+        $this->output->writeln("\r\n<info>Test the refresh token removed from the response:</info>");
+        $this->client->catchExceptions(false);
+
+        $this->simulateLogin('ROLE_ADMIN');
+
+        $token = $this->getJsonResponseContentValue(parent::$kernel->getContainer()
+            ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
+
+        if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
+            $this->assertSame(true, !empty($token) && is_string($token));
+        } else {
+            $this->assertSame(null, $token);
+
+            $this->client->request('GET', '/authorization-tests/admin-role');
+
+            $this->output->writeln("\n<info>... Check again the refresh token is removed, after a valid request on an authorized route ...</info>");
+            $this->assertSame(null, $this->getJsonResponseContentValue(parent::$kernel->getContainer()
+                ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name')));
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function testAddRefreshTokenToJWTRefreshRequest(): void
     {
         $this->runCommand('doctrine:fixtures:load --append --group=UserFixtures');
         $this->output->writeln("\r\n<info>Test the token refresh:</info>");
@@ -26,16 +74,6 @@ class TokenRefreshListenerTest extends AbstractSecurityTest
         if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
             $this->output->writeln("\n<info>Save the refresh token after login ...</info>");
             $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
-            $this->assertSame(true, !empty($refreshToken) && is_string($refreshToken));
-        } else {
-            $this->assertSame(null, $this->getJsonResponseContentValue(parent::$kernel->getContainer()
-                ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name')));
-
-            $this->client->request('GET', '/authorization-tests/admin-role');
-
-            $this->output->writeln("\n<info>... Check again the refresh token is removed, after a valid request on an authorized route ...</info>");
-            $this->assertSame(null, $this->getJsonResponseContentValue(parent::$kernel->getContainer()
-                ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name')));
         }
 
         $this->output->writeln("\n<info>Waiting for token expiration (sleep: 6 seconds -> (the token expiration time is 5 seconds in test environment.))</info>");

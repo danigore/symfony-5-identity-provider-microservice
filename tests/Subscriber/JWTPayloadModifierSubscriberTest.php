@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Tests\Listener;
+namespace App\Tests\Subscriber;
 
 use App\Tests\AbstractSecurityTest;
 
 /**
- * Class JWTCreatedListenerTest
- * @package App\Tests\Listener
+ * Class JWTPayloadModifierSubscriberTest
+ * @package App\Tests\Subscriber
  */
-class JWTCreatedListenerTest extends AbstractSecurityTest
+class JWTPayloadModifierSubscriberTest extends AbstractSecurityTest
 {
     /**
      * @return void
      */
-    public function testJWTPayloadExtendedWithTheUserId(): void
+    public function testModifyJWTPayload(): void
     {
         $this->runCommand('doctrine:fixtures:load --append --group=UserFixtures');
         $this->output->writeln("\r\n<info>Test the JWT payload included the user ID:</info>");

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Tests\Listener;
+namespace App\Tests\Subscriber;
 
 use App\Tests\AbstractSecurityTest;
 
 /**
- * Class AuthenticationSuccessListenerTest
- * @package App\Tests\Listener
+ * Class TokenStorageCleanerSubscriberTest
+ * @package App\Tests\Subscriber
  */
-class AuthenticationSuccessListenerTest extends AbstractSecurityTest
+class TokenStorageCleanerSubscriberTest extends AbstractSecurityTest
 {
     /**
      * Across the security.token_storage, originally you can get a UsernamePasswordToken object,
@@ -18,7 +18,7 @@ class AuthenticationSuccessListenerTest extends AbstractSecurityTest
      *
      * @return void
      */
-    public function testTokenStorageCleanedAfterAuthenticationAndTokenRefresh(): void
+    public function testCleanTokenStorage(): void
     {
         $this->runCommand('doctrine:fixtures:load --append --group=UserFixtures');
         $this->output->writeln("\r\n<info>Test there is no token in the security.token_storage</info>");

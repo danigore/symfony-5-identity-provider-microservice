@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Listener;
+namespace App\Subscriber;
 
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class AuthenticationSuccessListener
- * @package App\Listener
+ * Class TokenStorageCleanerSubscriber
+ * @package App\Subscriber
  */
-class AuthenticationSuccessListener implements EventSubscriberInterface
+class TokenStorageCleanerSubscriber implements EventSubscriberInterface
 {
     /**
      * @var Container $container
@@ -18,7 +18,7 @@ class AuthenticationSuccessListener implements EventSubscriberInterface
     private Container $container;
 
     /**
-     * AuthenticationSuccessListener constructor.
+     * TokenStorageCleanerSubscriber constructor.
      *
      * @param Container $container
      */
@@ -31,7 +31,7 @@ class AuthenticationSuccessListener implements EventSubscriberInterface
      * @param AuthenticationSuccessEvent $event
      * @return void
      */
-    public function onAuthenticationSuccess(AuthenticationSuccessEvent $event): void
+    public function cleanTokenStorage(AuthenticationSuccessEvent $event): void
     {
         if ($this->container->has('security.token_storage')) {
             $this->container->get('security.token_storage')->setToken(null);
@@ -44,7 +44,7 @@ class AuthenticationSuccessListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'lexik_jwt_authentication.on_authentication_success' => [['onAuthenticationSuccess']],
+            'lexik_jwt_authentication.on_authentication_success' => [['cleanTokenStorage']],
         ];
     }
 }

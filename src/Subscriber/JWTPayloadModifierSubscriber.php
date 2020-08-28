@@ -1,28 +1,29 @@
 <?php
 
-namespace App\Listener;
+namespace App\Subscriber;
 
+use App\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class JWTCreatedListener
- * @package App\Listener
+ * Class JWTPayloadModifierSubscriber
+ * @package App\Subscriber
  */
-class JWTCreatedListener implements EventSubscriberInterface
+class JWTPayloadModifierSubscriber implements EventSubscriberInterface
 {
     /**
      * @param JWTCreatedEvent $event
      * @return void
      */
-    public function onJWTCreated(JWTCreatedEvent $event): void
+    public function modifyJWTPayload(JWTCreatedEvent $event): void
     {
         // Careful: Before you add your own custom data, know that the JWT payload is not encrypted,
         // it is only base64 encoded. The token signature ensures its integrity (meaning it cannot be modified),
         // but anyone can read its content (try it using a simple tool like http://jwt.io/).
         $user = $event->getUser();
 
-        if (!method_exists($user, 'getId')) {
+        if (!$user instanceof User) {
             return;
         }
 
@@ -38,7 +39,7 @@ class JWTCreatedListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'lexik_jwt_authentication.on_jwt_created' => [['onJWTCreated']],
+            'lexik_jwt_authentication.on_jwt_created' => [['modifyJWTPayload']],
         ];
     }
 }
