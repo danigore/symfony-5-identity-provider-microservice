@@ -32,7 +32,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractSecurityTest
             $this->client->request('GET', '/authorization-tests/user-role');
         }
 
-        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
 
         $this->output->writeln("\n<info>Waiting for token expiration (sleep: 6 seconds -> (the token expiration time is 5 seconds in test environment.))</info>");
         sleep(6);
@@ -66,7 +66,7 @@ class AuthorizationTestRoutesControllerTest extends AbstractSecurityTest
             $this->client->request('GET', '/authorization-tests/admin-role');
         }
 
-        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
 
         $this->output->writeln("\n<info>Waiting for token expiration (sleep: 6 seconds -> (the token expiration time is 5 seconds in test environment.))</info>");
         sleep(6);

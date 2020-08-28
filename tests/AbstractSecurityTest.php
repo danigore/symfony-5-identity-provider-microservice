@@ -144,7 +144,7 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
         } catch (AccessDeniedException $e) {
             $exceptionThrown = true;
         }
-        $this->assertEquals(true, $exceptionThrown);
+        $this->assertSame(true, $exceptionThrown);
     }
 
     /**
@@ -168,7 +168,7 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
         } catch (AccessDeniedException $e) {
             $exceptionThrown = true;
         }
-        $this->assertEquals(true, $exceptionThrown);
+        $this->assertSame(true, $exceptionThrown);
     }
 
     /**

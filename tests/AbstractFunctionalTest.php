@@ -7,12 +7,12 @@ use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 /**
@@ -134,7 +134,7 @@ abstract class AbstractFunctionalTest extends WebTestCase
         } catch (MethodNotAllowedHttpException $e) {
             $exceptionThrown = true;
         }
-        $this->assertEquals(true, $exceptionThrown);
+        $this->assertSame(true, $exceptionThrown);
     }
 
     /**

@@ -48,7 +48,7 @@ class SecurityControllerTest extends AbstractSecurityTest
         } catch (LogoutNotSupportedWithAuthorizationHeaderTypeTokenExtractorException $e) {
             $exceptionThrown = true;
         }
-        $this->assertEquals(true, $exceptionThrown);
+        $this->assertSame(true, $exceptionThrown);
     }
 
     /**
@@ -64,11 +64,11 @@ class SecurityControllerTest extends AbstractSecurityTest
 
         $this->client->request('DELETE', '/logout');
         $this->output->writeln("\n<info>Logout requested ...</info>");
-        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
 
         $this->output->writeln("\n<info>After a logout request, a token refresh request should be denied! (Expected status code:401 (UNAUTHORIZED))</info>");
         $this->client->request('UPDATE', '/token/refresh');
-        $this->assertEquals(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
         
         $this->output->writeln("\n<info>Expected exception on authorized route: AccessDeniedException</info>");
         $this->accessDeniedWithoutLoginTest('/authorization-tests/user-role');
@@ -111,7 +111,7 @@ class SecurityControllerTest extends AbstractSecurityTest
         } catch (MethodNotAllowedHttpException $e) {
             $exceptionThrown = true;
         }
-        $this->assertEquals(true, $exceptionThrown);
+        $this->assertSame(true, $exceptionThrown);
     }
 
     /**
@@ -124,12 +124,12 @@ class SecurityControllerTest extends AbstractSecurityTest
         $this->output->writeln("<error>more info: https://blog.liplex.de/improve-security-when-working-with-jwt-and-symfony/</error>");
 
         $token = $this->getJsonResponseContentValue('token');
-        $this->assertEquals(true, !empty($token) && is_string($token));
+        $this->assertSame(true, !empty($token) && is_string($token));
 
         $this->output->writeln("\n<info>Save the refresh token ...</info>");
         $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()
             ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
-        $this->assertEquals(true, !empty($refreshToken) && is_string($refreshToken));
+        $this->assertSame(true, !empty($refreshToken) && is_string($refreshToken));
     }
 
     /**
@@ -138,11 +138,11 @@ class SecurityControllerTest extends AbstractSecurityTest
     private function checkCookieTest(): void
     {
         $this->output->writeln("<info>Secure httponly cookie token extractor is enabled ... Great!</info>");
-        $this->assertEquals(true, $this->client->getCookieJar()->get(parent::$kernel->getContainer()
+        $this->assertSame(true, $this->client->getCookieJar()->get(parent::$kernel->getContainer()
             ->getParameter('app.jwt_cookie_name'))->isHttpOnly());
 
         $this->output->writeln("\n<info>In secure mode the Refresh token need to be removed from the response content, immediately after the login!</info>");
-        $this->assertEquals(null, $this->getJsonResponseContentValue(parent::$kernel->getContainer()
+        $this->assertSame(null, $this->getJsonResponseContentValue(parent::$kernel->getContainer()
             ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name')));
     }
 }

@@ -26,15 +26,15 @@ class TokenRefreshListenerTest extends AbstractSecurityTest
         if ($this->authorizationHeaderTypeTokenExtractorIsEnabled()) {
             $this->output->writeln("\n<info>Save the refresh token after login ...</info>");
             $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
-            $this->assertEquals(true, !empty($refreshToken) && is_string($refreshToken));
+            $this->assertSame(true, !empty($refreshToken) && is_string($refreshToken));
         } else {
-            $this->assertEquals(null, $this->getJsonResponseContentValue(parent::$kernel->getContainer()
+            $this->assertSame(null, $this->getJsonResponseContentValue(parent::$kernel->getContainer()
                 ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name')));
 
             $this->client->request('GET', '/authorization-tests/admin-role');
 
             $this->output->writeln("\n<info>... Check again the refresh token is removed, after a valid request on an authorized route ...</info>");
-            $this->assertEquals(null, $this->getJsonResponseContentValue(parent::$kernel->getContainer()
+            $this->assertSame(null, $this->getJsonResponseContentValue(parent::$kernel->getContainer()
                 ->getParameter('gesdinet_jwt_refresh_token.token_parameter_name')));
         }
 
@@ -70,24 +70,24 @@ class TokenRefreshListenerTest extends AbstractSecurityTest
         } catch (MethodNotAllowedHttpException $e) {
             $exceptionThrown = true;
         }
-        $this->assertEquals(true, $exceptionThrown);
+        $this->assertSame(true, $exceptionThrown);
 
         $this->client->request('UPDATE', '/token/refresh', [], [], [
             'CONTENT_TYPE' => 'application/json'
         ], json_encode([$refreshTokenParameterName => $refreshToken]));
-        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         $newToken = $this->getJsonResponseContentValue('token');
-        $this->assertEquals(true, !empty($newToken) && is_string($newToken));
-        $this->assertEquals(false, $token == $newToken);
+        $this->assertSame(true, !empty($newToken) && is_string($newToken));
+        $this->assertSame(false, $token == $newToken);
 
         $this->output->writeln("\n<info>Invalid request with the old token ...</info>");
         $this->output->writeln("<info>Expected status code:401, with Expired JWT Token message (without AccessDeniedException!)</info>");
         $this->client->request('GET', '/authorization-tests/admin-role', [], [], $this->getAuthHeaders($token));
-        $this->assertEquals(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
 
         $this->output->writeln("\n<info>Valid request with the refreshed token</info>");
         $this->client->request('GET', '/authorization-tests/admin-role', [], [], $this->getAuthHeaders($newToken));
-        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -98,7 +98,7 @@ class TokenRefreshListenerTest extends AbstractSecurityTest
         $cookieName = parent::$kernel->getContainer()->getParameter('app.jwt_cookie_name');
         
         $this->output->writeln("\n<info>BEARER cookie expired ...</info>");
-        $this->assertEquals(true, empty($this->client->getCookieJar()->get($cookieName)));
+        $this->assertSame(true, empty($this->client->getCookieJar()->get($cookieName)));
 
         $this->output->writeln("<info>In secure mode expected: AccessDeniedException!</info>");
         $this->accessDeniedWithoutLoginTest('/authorization-tests/admin-role');
@@ -112,15 +112,15 @@ class TokenRefreshListenerTest extends AbstractSecurityTest
         
         $this->output->writeln("<info>Expected Status Code in secure mode 204 (HTTP_NO_CONTENT)</info>");
         $this->client->request('UPDATE', '/token/refresh');
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals(false, empty($this->client->getCookieJar()->get($cookieName)));
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(false, empty($this->client->getCookieJar()->get($cookieName)));
 
         $this->output->writeln("\n<info>In secure mode the Refresh token need to be removed from the response content, immediately after the refresh!</info>");
         $refreshToken = $this->getJsonResponseContentValue(parent::$kernel->getContainer()->getParameter('gesdinet_jwt_refresh_token.token_parameter_name'));
-        $this->assertEquals(null, $refreshToken);
+        $this->assertSame(null, $refreshToken);
 
         $this->output->writeln("\n<info>Valid request with the new cookie</info>");
         $this->client->request('GET', '/authorization-tests/admin-role');
-        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 }

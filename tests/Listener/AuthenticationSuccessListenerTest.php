@@ -25,10 +25,10 @@ class AuthenticationSuccessListenerTest extends AbstractSecurityTest
         $this->client->catchExceptions(false);
 
         $this->simulateLogin('ROLE_ADMIN');
-        $this->assertEquals(null, parent::$container->get('security.token_storage')->getToken());
+        $this->assertSame(null, parent::$container->get('security.token_storage')->getToken());
 
         $this->output->writeln("\r\n<info>Check again after a token refresh ...</info>");
         $this->refreshTheToken();
-        $this->assertEquals(null, parent::$container->get('security.token_storage')->getToken());
+        $this->assertSame(null, parent::$container->get('security.token_storage')->getToken());
     }
 }
