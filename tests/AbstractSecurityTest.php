@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use App\Security\UserInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\InvalidPayloadException;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\UserNotFoundException;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\PreAuthenticationJWTUserToken;
 use Symfony\Component\BrowserKit\Cookie;
@@ -50,8 +51,13 @@ abstract class AbstractSecurityTest extends AbstractFunctionalTest
 
         $tokenDecoder = parent::$container->get('lexik_jwt_authentication.encoder.lcobucci');
         $JWTTokenAuthenticator = parent::$container->get('lexik_jwt_authentication.jwt_token_authenticator');
+        
+        try {
+            $payload = $tokenDecoder->decode($rawToken);
+        } catch (JWTDecodeFailureException $e) {
+            return null;
+        }
 
-        $payload = $tokenDecoder->decode($rawToken);
         $token = new PreAuthenticationJWTUserToken($rawToken);
         $token->setPayload($payload);
 
